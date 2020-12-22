@@ -1,0 +1,200 @@
+---
+title: "Line_Chart_Tutorial"
+author: "Raquel Baltazar"
+date: "12/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Line Charts with R
+*Source:* https://appsilon.com/ggplot2-line-charts/
+
+```{r libraries}
+library(dplyr)
+library(ggplot2)
+library(gapminder)
+head(gapminder)
+```
+
+# Make your first line chart
+
+Your first chart will show the population over time for the United States. Columns `year` and `pop` are placed on X-axis and Y-axis, respectively:
+
+```{r data}
+usa <- gapminder %>%
+  filter(continent == "Americas", country == "United States")
+
+ggplot(usa, aes(x = year, y = pop)) +
+  geom_line()
+```
+# Change Color, Line Type, and Add Markers
+
+With the `geom_line()` layer, you can change the following properties:
+
++ color – line color
++ size – line width
++ linetype – maybe you want dashed lines
+
+
+**Make a thicker dashed blue line:**
+
+```{r thicker_dashed_blue_line}
+ggplot(usa, aes(x = year, y = pop)) +
+  geom_line(linetype = "dashed", color = "#0099f9", size = 2)
+```
+
+
+**Now add points (markers):**
+```{r add_points}
+ggplot(usa, aes(x = year, y = pop)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5)
+```
+
+# Titles, Subtitles, and Captions
+You can add titles and subtitles through a `labs()` layer. It takes in values for **title**, **subtitle**, and **caption**.
+
+**Add all three:**
+```{r title_subtitles_captions}
+ggplot(usa, aes(x = year, y = lifeExp)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  labs(
+    title = "Average life expectancy in US",
+    subtitle = "Data from 1952 to 2007",
+    caption = "Source: Gapminder dataset")
+```
+**You can customize all three in the same way – by putting styles to the `theme()` layer.** Here’s how to center title and caption, left align and italicize the caption, and make the title blue:
+
+```{r line_graph}
+ggplot(usa, aes(x = year, y = lifeExp)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  labs(
+    title = "Average life expectancy in US",
+    subtitle = "Data from 1952 to 2007",
+    caption = "Source: Gapminder dataset") +
+  theme(
+    plot.title = element_text(color = "#0099f9", size = 20, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 13, face = "bold", hjust = 0.5),
+    plot.caption = element_text(face = "italic", hjust = 0))
+```
+
+# Edit Axis Labels
+Just take a look at the Y-axis for the previous year vs. population charts. The ticks look horrible. Scientific notation doesn’t help make things easier to read. The following snippet puts “M” next to the number – indicates “Millions”:
+
+```{r add_M_of_millions}
+library(scales)
+
+ggplot(usa, aes(x = year, y = pop)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  scale_y_continuous(
+    labels = unit_format(unit = "M", scale = 1e-6))
+```
+
+Let's add **more space on top and bottom**. You can specify where the axis starts and ends:
+
+```{r limits}
+ggplot(usa, aes(x = year, y = pop)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  expand_limits(y = c(125000000, 325000000)) +
+  scale_y_continuous(
+    labels = unit_format(unit = "M", scale = 1e-6))
+```
+
+Use the `labs()` layer to take in values for `x` and `y` – these determine the text shown on the X and Y axes, respectively. You can tweak the styles for axis labels the same way you did with the title, subtitle, and caption. This is how:
+
+```{r tweak_styles_for_axis_labels}
+ggplot(usa, aes(x = year, y = pop)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  scale_y_continuous(
+    labels = unit_format(unit = "M", scale = 1e-6)) +
+  labs(
+    x = "Year",
+    y = "Population") +
+  theme(
+    axis.title.x = element_text(color = "#0099f9", size = 16, face = "bold"),
+    axis.title.y = element_text(color = "#0099f9", size = 16, face = "italic"))
+```
+
+# Draw Multiple Lines on the Same Chart
+
+Here we will show multiple lines on a single chart. We’ll compare average life expectancy between major North American countries – the United States, Canada, and Mexico.
+
+**You can use the `group` attribute in the data aesthetics layer to display multiple lines.** Here’s how:
+
+```{r multiple_lines}
+north_big <- gapminder %>%
+  filter(continent == "Americas", country %in% c("United States", "Canada", "Mexico"))
+
+ggplot(north_big, aes(x = year, y = lifeExp, group = country)) +
+  geom_line(aes(color = country), size = 2)
+```
+like above (the single line), you can add **markers** to multiple lines. 
+Here is how:
+
+```{r marks_to_multiple_lines}
+ggplot(north_big, aes(x = year, y = lifeExp, group = country)) +
+  geom_line(aes(color = country), size = 2) +
+  geom_point(aes(color = country), size = 5)
+```
+
+**the legend on the right appears whenever you have multiple lines in one chart in order to know which is which**
+
+But, let's put the legend on the top:
+
+```{r legend_on_top}
+ggplot(north_big, aes(x = year, y = lifeExp, group = country)) +
+  geom_line(aes(color = country), size = 2) +
+  geom_point(aes(color = country), size = 5) +
+  theme(legend.position = "top")
+```
+
+# Adding Labels
+
+**be mindful that your labels do not make your visualisation messy** 
+
+```{r adding_labels}
+ggplot(usa, aes(x = year, y = lifeExp)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  geom_text(aes(label = lifeExp))
+```
+
+Here you can make the text larger and push the labels a bit higher:
+
+```{r enlarge_text_and_higher_labels}
+ggplot(usa, aes(x = year, y = lifeExp)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  geom_text(
+    aes(label = lifeExp),
+    nudge_x = 0.25,
+    nudge_y = 0.25,
+    check_overlap = TRUE,
+    size = 5)
+```
+
+Showing text might not be the cleanest solution every time. 
+
+Let's wrap the text inside a box to give your visualization a touch more style. You can do that by replacing `geom_text()` with `geom_label()`. 
+That’s the only change you need to make:
+
+```{r replace_geom_text()_with_geom_label}
+ggplot(usa, aes(x = year, y = lifeExp)) +
+  geom_line(color = "#0099f9", size = 2) +
+  geom_point(color = "#0099f9", size = 5) +
+  geom_label(
+    aes(label = lifeExp),
+    nudge_x = 0.25,
+    nudge_y = 0.25,
+    check_overlap = TRUE
+  )
+```
+
