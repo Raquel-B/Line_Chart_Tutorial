@@ -42,6 +42,7 @@ usa <- gapminder %>%
 ggplot(usa, aes(x = year, y = pop)) +
   geom_line()
 ```
+
 # Change Color, Line Type, and Add Markers
 
 With the `geom_line()` layer, you can change the following properties:
@@ -79,6 +80,7 @@ ggplot(usa, aes(x = year, y = lifeExp)) +
     subtitle = "Data from 1952 to 2007",
     caption = "Source: Gapminder dataset")
 ```
+
 **You can customize all three in the same way – by putting styles to the `theme()` layer.** Here’s how to center title and caption, left align and italicize the caption, and make the title blue:
 
 ```{r line_graph}
@@ -148,6 +150,7 @@ north_big <- gapminder %>%
 ggplot(north_big, aes(x = year, y = lifeExp, group = country)) +
   geom_line(aes(color = country), size = 2)
 ```
+
 like above (the single line), you can add **markers** to multiple lines. 
 Here is how:
 
@@ -170,7 +173,7 @@ ggplot(north_big, aes(x = year, y = lifeExp, group = country)) +
 
 # Adding Labels
 
-**be mindful that your labels do not make your visualisation messy** 
+**Be mindful that your labels do not make your visualisation messy** 
 
 ```{r adding_labels}
 ggplot(usa, aes(x = year, y = lifeExp)) +
